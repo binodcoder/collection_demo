@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +12,7 @@ void main() => runApp(
     );
 
 class Test extends StatefulWidget {
-  const Test({Key? key}) : super(key: key);
+  const Test({Key key}) : super(key: key);
 
   @override
   State<Test> createState() => _TestState();
@@ -29,9 +28,9 @@ class _TestState extends State<Test> {
       _items = data["data"]["Table1"];
     });
 
-    _items.forEach((m) {
-      print(m["billdt"].split("T")[0]);
-    });
+    var newMap = groupBy(_items, (obj) => obj['billdt']);
+
+    print(newMap);
 
     // for (var key in data.keys) {
     //   var sum = 0;
