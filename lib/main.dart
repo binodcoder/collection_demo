@@ -40,18 +40,6 @@ class _TestState extends State<Test> {
       });
       print("Total=$sum");
     });
-
-    // for (var key in data.keys) {
-    //   var sum = 0;
-    //   var tot = data[key];
-
-    //   tot!.forEach((element) {
-    //     print(element);
-    //     sum += element;
-    //   });
-    //   print("Total=$sum");
-    //   print('..........');
-    // }
   }
 
   @override
