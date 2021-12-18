@@ -31,6 +31,15 @@ class _TestState extends State<Test> {
     var newMap = groupBy(_items, (obj) => obj['billdt']);
 
     print(newMap);
+    newMap.forEach((key, value) {
+      print(key);
+      var sum = 0.0;
+      value.forEach((element) {
+        print(element['BillTot']);
+        sum += element['BillTot'];
+      });
+      print("Total=$sum");
+    });
 
     // for (var key in data.keys) {
     //   var sum = 0;
