@@ -5,9 +5,7 @@ import 'package:flutter/services.dart';
 
 void main() => runApp(
       const MaterialApp(
-        home: Scaffold(
-          body: Test(),
-        ),
+        home: Test(),
       ),
     );
 
@@ -20,6 +18,13 @@ class Test extends StatefulWidget {
 
 class _TestState extends State<Test> {
   List _items = [];
+  var newMap = {};
+
+  @override
+  void initState() {
+    readJson();
+    super.initState();
+  }
 
   Future<void> readJson() async {
     final String response = await rootBundle.loadString('assets/data.json');
@@ -28,27 +33,126 @@ class _TestState extends State<Test> {
       _items = data["data"]["Table1"];
     });
 
-    var newMap = groupBy(_items, (obj) => obj['billdt']);
-
-    print(newMap);
-    newMap.forEach((key, value) {
-      print(key);
-      var sum = 0.0;
-      value.forEach((element) {
-        print(element['BillTot']);
-        sum += element['BillTot'];
-      });
-      print("Total=$sum");
-    });
+    newMap = groupBy(_items, (obj) => obj['billdt']);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: TextButton(
-        onPressed: readJson,
-        child: const Text('call'),
-      ),
-    );
+    List c = <Widget>[];
+    var totalSum = 0.0;
+
+    newMap.forEach((key, value) {
+      var groupSum = 0.0;
+
+      c.add(Container(
+        margin: const EdgeInsets.only(top: 10, bottom: 10),
+        child: Text(
+          key,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ));
+
+      c.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text(
+            'Guest Name',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Amount',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ));
+      c.add(const Padding(padding: EdgeInsets.only(bottom: 10)));
+      value.forEach((element) {
+        groupSum += element['BillTot'];
+        totalSum += element['BillTot'];
+        c.add(Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(element['GName']),
+                Text(element['BillTot'].toStringAsFixed(2)),
+              ],
+            ),
+            const Divider(
+              color: Colors.black,
+              height: 15.0,
+            ),
+          ],
+        ));
+      });
+      c.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Total',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            groupSum.toString(),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ));
+      c.add(const Divider(
+        color: Colors.black,
+        height: 15.0,
+        thickness: 2,
+      ));
+    });
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Room Sales"),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          type: BottomNavigationBarType.fixed,
+          unselectedItemColor: Colors.yellowAccent,
+          selectedItemColor: Colors.yellowAccent,
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          backgroundColor: Colors.blueGrey[900],
+          items: <BottomNavigationBarItem>[
+            const BottomNavigationBarItem(
+              icon: Icon(
+                Icons.calculate,
+                color: Colors.yellowAccent,
+              ),
+              label: "Total",
+            ),
+            BottomNavigationBarItem(
+              icon: Text(
+                totalSum.toStringAsFixed(2),
+                style: const TextStyle(
+                  color: Colors.yellowAccent,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              label: 'Room Sales',
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              height: double.infinity,
+              width: 500,
+              child: ListView.builder(
+                  itemCount: c.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: c,
+                    );
+                  }),
+            )));
   }
 }
